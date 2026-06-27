@@ -77,3 +77,4 @@ app.listen(PORT, () => {
   console.log(`🤝 Co-Owner Login: jaredhammill@icloud.com / AEPJared2024!`);
   console.log('');
   console.log('THE BEST IS YET TO COME 🏆');
+});
