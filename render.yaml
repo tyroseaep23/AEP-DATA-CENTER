@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: aep-data-center
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.0
+      - key: SITE_PASSWORD
+        value: AEP1
+      - key: JWT_SECRET
+        generateValue: true
