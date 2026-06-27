@@ -31,7 +31,15 @@ app.use('/api/leaderboards', leaderboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/matchups', matchupRoutes);
 
-// Public incentives endpoint (authenticated but not admin-only)
+// Public teams endpoint for registration (no auth needed) — MUST be before wildcard
+app.get('/api/public/teams', (req, res) => {
+  const { getDb } = require('./database');
+  const db = getDb();
+  const teams = db.prepare('SELECT name FROM teams ORDER BY name').all();
+  res.json({ teams: teams.map(t => t.name) });
+});
+
+// Public incentives endpoint (authenticated)
 app.get('/api/incentives', (req, res) => {
   const { authenticateToken } = require('./middleware/auth');
   authenticateToken(req, res, () => {
@@ -42,7 +50,7 @@ app.get('/api/incentives', (req, res) => {
   });
 });
 
-// Serve frontend for all non-API routes (SPA)
+// Serve frontend for all non-API routes (SPA) — MUST be last
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -53,14 +61,6 @@ cron.schedule('30 20 * * *', () => {
   sendDailyReminders();
 }, {
   timezone: 'America/New_York'
-});
-
-// Public endpoint for registration (no auth needed)
-app.get('/api/public/teams', (req, res) => {
-  const { getDb } = require('./database');
-  const db = getDb();
-  const teams = db.prepare('SELECT name FROM teams ORDER BY name').all();
-  res.json({ teams: teams.map(t => t.name) });
 });
 
 app.listen(PORT, () => {
@@ -78,5 +78,3 @@ app.listen(PORT, () => {
   console.log('');
   console.log('THE BEST IS YET TO COME 🏆');
 });
-
-// NOTE: public teams endpoint added inline above - add this before app.listen:
